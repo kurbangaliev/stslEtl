@@ -1,14 +1,14 @@
 import numpy as np
 
 class Transform:
-    @staticmethod
-    def df_to_sql(table_name, df):
-        columns = ','.join(df.columns)
+    dims_sql_file = "dims.sql"
+    departures_sql_file = "departures.sql"
+    giving_sql_file = "giving.sql"
 
-        if 'dim' in table_name:
-            path = 'data/sql/dims.sql'
-        else:
-            path = 'data/sql/facts.sql'
+    @staticmethod
+    def df_to_sql(table_name, df, filename = dims_sql_file):
+        columns = ','.join(df.columns)
+        path = f'data/sql/{filename}'
 
         with open(path, 'a+', encoding='utf8') as fl:
             for _, record in df.iterrows():
