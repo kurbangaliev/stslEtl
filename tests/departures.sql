@@ -1,0 +1,17 @@
+INSERT INTO facts_departures (id,route_id,transportation_sheet_id,sender_id,receiver_id,real_wagon_loading,real_train_weight_gross,
+real_train_wight_net,cargo_type_id,empty_types_id,down_time,axis_count,end_pending_dttm,departure_dttm,calendar_stamp_dtm)
+VALUES (27948.0,
+8590.0,
+105268.0,
+4027.0,
+109.0,
+47.0,
+1115.3,
+0.0,
+1141.0,
+0.0,
+3.066667,
+188.0,
+'2024-10-02T07:10:00',
+'2024-10-02T10:14:00',
+'2024-10-02T23:45:50');
