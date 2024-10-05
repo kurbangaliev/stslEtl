@@ -14,6 +14,8 @@ from sql_transform import Transform
 logger = logging.getLogger(__name__)
 
 class Loader:
+    loader_begin_date = datetime.datetime(2021, 9, 1)
+
     @staticmethod
     def clear_data():
         pathlib.Path('data/').mkdir(parents=True, exist_ok=True)
@@ -43,8 +45,7 @@ class Loader:
         logger.info("get_departure_documents")
         pathlib.Path('data/departure/').mkdir(parents=True, exist_ok=True)
 
-        #begin_date = datetime.datetime(2021, 9, 1)
-        begin_date = datetime.datetime(2024, 9, 1)
+        begin_date = Loader.loader_begin_date
         index = 0
         threads = []
 
@@ -79,8 +80,7 @@ class Loader:
         logger.info("get_giving_documents")
         pathlib.Path('data/giving/').mkdir(parents=True, exist_ok=True)
 
-        #begin_date = datetime.datetime(2021, 9, 1)
-        begin_date = datetime.datetime(2024, 9, 1)
+        begin_date = Loader.loader_begin_date
         index = 0
         threads = []
 
@@ -202,3 +202,29 @@ class Loader:
                                                                             'axis_count', 'end_pending_dttm',
                                                                             'departure_dttm', 'calendar_stamp_dttm']]
         Transform.df_to_sql('facts_departures', unique_facts_departures, Transform.departures_sql_file)
+
+    @staticmethod
+    def create_facts_giving():
+        giving_documents = pd.read_csv("data/giving_documents.csv")
+        facts_giving_documents = giving_documents[['GIVINGDOCUMENTID', 'GIVINGDATE', 'ENROLLMENTDATE', 'DOWNTIMETRAIN',
+                                                   'DEPARTUREDOCUMENTID', 'TRANSPORTATIONSHEETID', 'INTERVALGIVING',
+                                                   'DEPARTUREDATE', 'ENDPENDINGDATE', 'IDLETRAIN', 'TRAVELTIME',
+                                                   'CREWDOWNTIME', 'CREWDOWNTIMENOPLAN', 'INTERMEDIATEDOWNTIME']]
+        facts_giving_documents.rename(columns={'GIVINGDOCUMENTID': 'id', 'GIVINGDATE': 'giving_dttm',
+                                               'ENROLLMENTDATE': 'enrollment_dttm', 'DOWNTIMETRAIN': 'down_time_train',
+                                               'DEPARTUREDOCUMENTID': 'facts_departures_id',
+                                               'TRANSPORTATIONSHEETID': 'transportation_sheet_id',
+                                               'INTERVALGIVING': 'interval_giving', 'DEPARTUREDATE': 'departure_dttm',
+                                               'ENDPENDINGDATE': 'end_pending_dttm', 'IDLETRAIN': 'idle_train',
+                                               'TRAVELTIME': 'travel_time', 'CREWDOWNTIME': 'crew_down_time',
+                                               'CREWDOWNTIMENOPLAN': 'crew_down_time_plan',
+                                               'INTERMEDIATEDOWNTIME': 'intermediate_down_time'},
+                                      inplace=True)
+        unique_facts_giving = facts_giving_documents.drop_duplicates(['id'])[['id', 'giving_dttm', 'enrollment_dttm',
+                                                                              'down_time_train', 'facts_departures_id',
+                                                                              'transportation_sheet_id', 'interval_giving',
+                                                                              'departure_dttm', 'end_pending_dttm',
+                                                                              'idle_train', 'travel_time',
+                                                                              'crew_down_time', 'crew_down_time_plan',
+                                                                              'intermediate_down_time']]
+        Transform.df_to_sql('facts_givings', unique_facts_giving, Transform.giving_sql_file)
